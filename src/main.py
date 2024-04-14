@@ -122,5 +122,22 @@ def main():
         fig_forecast.update_layout(title='Série Histórica vs. Previsão para os Próximos 15 Dias', xaxis_title='Data', yaxis_title='Quantidade')
         st.plotly_chart(fig_forecast)
 
+    # Botão para plotar previsão dos próximos 30 dias
+    if st.button('Plotar Previsão para os Próximos 30 Dias'):
+        # Criar um DataFrame com as datas dos próximos 15 dias para a previsão
+        future_dates = pd.date_range(start=data_fim + pd.DateOffset(days=1), periods=30)
+        future_dates_df = pd.DataFrame({'ds': future_dates})
+
+        # Fazer a previsão para os próximos 30 dias
+        forecast = model_prophet.predict(future_dates_df)
+
+        # Adicionar previsão para os próximos 30 dias ao gráfico
+        fig_forecast = go.Figure()
+        fig_forecast.add_trace(go.Scatter(x=df_filtrado['Data'], y=df_filtrado['CustoMensal'], mode='lines+markers', name='Série Histórica'))
+        fig_forecast.add_trace(go.Scatter(x=forecast['ds'], y=forecast['yhat'], mode='lines', name='Previsão', line=dict(color='red')))
+
+        fig_forecast.update_layout(title='Série Histórica vs. Previsão para os Próximos 30 Dias', xaxis_title='Data', yaxis_title='Quantidade')
+        st.plotly_chart(fig_forecast)
+
 if __name__ == "__main__":
     main()
